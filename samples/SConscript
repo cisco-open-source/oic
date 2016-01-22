@@ -1,0 +1,108 @@
+#******************************************************************
+#
+# Copyright 2014 Intel Mobile Communications GmbH All Rights Reserved.
+#
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+##
+# Examples build script
+##
+Import('env')
+# Add third party libraries
+lib_env = env.Clone()
+SConscript(env.get('SRC_DIR') + '/resource/third_party_libs.scons', 'lib_env')
+
+samples_env = lib_env.Clone()
+
+secured = samples_env.get('SECURED')
+
+######################################################################
+# Build flags
+######################################################################
+samples_env.AppendUnique(CPPPATH = [
+		'../include/',
+		'../../include/',
+		'../../csdk/stack/include',
+		'../../csdk/security/include',
+		'../../csdk/ocrandom/include',
+		'../../csdk/logger/include',
+		'../../csdk/connectivity/api',
+		'../../oc_logger/include',
+		'../../csdk/security/provisioning/include/internal',
+		'../../csdk/security/provisioning/include/oxm',
+		'../../csdk/security/provisioning/include/',
+		'../../../extlibs/tinydtls',
+		'../../../extlibs/cjson',
+		'../../../extlibs/base64',
+		'../../csdk/connectivity/inc',
+		'../../csdk/connectivity/common/inc',
+		'../../csdk/connectivity/lib/libcoap-4.1.1',
+		'../../csdk/connectivity/api'
+		])
+
+samples_env.PrependUnique(LIBS = ['oic', 'oc', 'octbstack', 'oc_logger', 'connectivity_abstraction', 'coap'])
+
+if env.get('SECURED') == '1':
+	oic_env.AppendUnique(LIBS = ['ocpmapi', 'tinydtls'])
+	oic_env.AppendUnique(CPPDEFINES = ['SECURE'])
+
+target_os = env.get('TARGET_OS')
+if target_os not in ['windows', 'winrt']:
+	samples_env.AppendUnique(CXXFLAGS = ['-std=c++0x', '-Wall', '-pthread'])
+
+	# Note: 'pthread' is in libc for android. On other platform, if use
+	# new gcc(>4.9?) it isn't required, otherwise, it's required
+	if target_os != 'android':
+		samples_env.AppendUnique(LIBS = ['-lpthread'])
+
+samples_env.AppendUnique(LIBPATH = [env.get('BUILD_DIR')])
+samples_env.AppendUnique(RPATH = [env.get('BUILD_DIR')])
+
+if target_os == 'android':
+	samples_env.AppendUnique(CXXFLAGS = ['-frtti', '-fexceptions'])
+	samples_env.AppendUnique(LIBS = ['gnustl_shared'])
+
+	if not env.get('RELEASE'):
+		samples_env.AppendUnique(LIBS = ['log'])
+
+if target_os in ['darwin', 'ios']:
+	samples_env.AppendUnique(CPPDEFINES = ['_DARWIN_C_SOURCE'])
+
+######################################################################
+# Source files and Targets
+######################################################################
+stbserver = samples_env.Program('stbserver', ['stbserver.cpp'])
+oicfridgeserver = samples_env.Program('oicfridgeserver', ['oicfridgeserver.cpp'])
+oicacserver = samples_env.Program('oicacserver', ['oicacserver.cpp'])
+input_key = samples_env.Program('input_key', ['input_key.c'])
+
+Alias("samples", [stbserver, oicfridgeserver, oicacserver, input_key])
+env.AppendTarget('samples')
+
+src_dir = samples_env.get('SRC_DIR')
+svr_db_src_dir = src_dir + '/resource/oic/samples'
+svr_db_build_dir = env.get('BUILD_DIR') +'/resource/oic/samples'
+samples_env.Alias("install", samples_env.Install( svr_db_build_dir,
+                svr_db_src_dir + 'oic_svr_db_client.json'))
+samples_env.Alias("install", samples_env.Install( svr_db_build_dir,
+                svr_db_src_dir + 'oic_svr_db_server.json'))
+samples_env.Alias("install", samples_env.Install( svr_db_build_dir,
+                svr_db_src_dir + 'oic_stb_server.json'))
+samples_env.Alias("install", samples_env.Install( svr_db_build_dir,
+                svr_db_src_dir + 'oic_fridge_server.json'))
+samples_env.Alias("install", samples_env.Install( svr_db_build_dir,
+                svr_db_src_dir + 'oic_ac_server.json'))

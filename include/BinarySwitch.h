@@ -4,7 +4,6 @@
 #include "Resource.h"
 
 using namespace OC;
-namespace PH = std::placeholders;
 
 /* Resource types */
 const std::string OIC_R_BINARY_SWITCH = "oic.r.switch.binary";

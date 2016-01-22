@@ -1,30 +1,29 @@
-#ifndef __OIC_R_NIGHT_MODE_H
-#define __OIC_R_NIGHT_MODE_H
+#ifndef __OIC_R_ICE_MAKER_H
+#define __OIC_R_ICE_MAKER_H
 
 #include "Resource.h"
 
 using namespace OC;
-namespace PH = std::placeholders;
 
 /* Resource types */
-const std::string OIC_R_NIGHT_MODE = "oic.r.nightmode";
+const std::string OIC_R_ICE_MAKER = "oic.r.icemaker";
 
 /* Attributes */
-const std::string NM = "nightMode";
+const std::string ICE_STATUS = "value";
 
 
-class NightMode : public Resource
+class IceMaker : public Resource
 {
 public:
-    NightMode(std::string uri) : NightMode(uri, false) {}
+    IceMaker(std::string uri) : IceMaker(uri, false) {}
 
-    NightMode(std::string uri, bool secure) :
+    IceMaker(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_NIGHT_MODE,
+                 OIC_R_ICE_MAKER,
                  OIC_IF_A,
                  secure)
     {
-        m_rep.setValue<bool>(NM, false);
+        m_rep.setValue<string>(ICE_STATUS, "full");
     }
 
 protected:
@@ -33,13 +32,13 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_NIGHT_MODE))
+        if (!checkType(rep, OIC_R_ICE_MAKER))
             return false;
 
         if (!checkInterface(rep, OIC_IF_A))
             return false;
 
-        if (!checkAttr(rep, NM, AttributeType::Boolean))
+        if (!checkAttr(rep, ICE_STATUS, AttributeType::String))
             return false;
 
         return true;
@@ -50,11 +49,11 @@ protected:
         if (Resource::put(rep) < 0)
             return -1;
 
-        bool b =  rep.getValue<bool>(NM);
+        std::string b =  rep.getValue<string>(ICE_STATUS);
 
-        if (b != m_rep.getValue<bool>(NM))
+        if (b != m_rep.getValue<string>(ICE_STATUS))
         {
-            m_rep.setValue<bool>(NM, b);
+            m_rep.setValue<string>(ICE_STATUS, b);
 
             return 1;
         }

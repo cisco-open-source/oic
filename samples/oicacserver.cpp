@@ -32,16 +32,14 @@
 #include "srmutility.h"
 #include "pmtypes.h"
 #include "OCPlatform.h"
-#include "AudioResource.h"
+#include "Mode.h"
+#include "Temperature.h"
 #include "BinarySwitch.h"
-#include "MediaSource.h"
-#include "NightMode.h"
-
+#include "AirFlow.h"
 
 using namespace OC;
-namespace PH = std::placeholders;
 /* Device Info */
-const std::string DEVICE_NAME = "Set-Top-Box";
+const std::string DEVICE_NAME = "oic-aircond";
 
 /* Platform Info */
 const std::string DATE_OF_MANUFACTURE = "January 14th, 2015";
@@ -63,48 +61,47 @@ const std::string OIC_WK_D = "oic.wk.d";
 const std::string OIC_D_TV = "oic.d.tv";
 //oic_svr_db_server.json
 //oic_svr_db.json
-const std::string JSON_FILE = "oic_stb_server.json";
+const std::string JSON_FILE = "oic_ac_server.json";
 const std::string JSON_PATH  = getUserHome() + "/" + JSON_FILE;
 
-#define TAG  "STB-SERVER"
+#define TAG  "Aircond-SERVER"
 
-class SetTopBox
+class Aircond
 {
 public:
-    SetTopBox() : SetTopBox(false)
+    Aircond() : Aircond(false)
     {}
 
-    SetTopBox(bool secure) : m_audio ("/stb/audio", secure),
-        m_bswitch ("/stb/binaryswitch", secure),
-        m_media ("/stb/media", getSources(), secure),
-        m_nightmode("/stb/nightmode", secure)
+    Aircond(bool secure) : m_power ("/sec/aircon/power", secure),
+        m_temp ("/sec/aircon/temperature", secure),
+        m_airflow("/sec/aircon/airFlow", secure),
+        m_mode("/sec/aircon/mode", secure)
     {}
 
 private:
-    AudioControl m_audio;
-    BinarySwitch m_bswitch;
-    MediaSourceList m_media;
-    NightMode m_nightmode;
+    BinarySwitch m_power;
+    Temperature m_temp;
+    AirFlow m_airflow;
+    Modes m_mode;
 
-    std::vector<MediaSource> getSources()
-    {
-        std::vector<MediaSource> sources;
-        MediaSource src = MediaSource("HDMI", 1, MSL_TYPE_AV, true);
-        sources.push_back(src);
-        return sources;
-    }
 };
 
 FILE* server_fopen(const char *path, const char *mode)
 {
     (void)path;
     const char* credFile = JSON_PATH.c_str();
-    OC_LOG_V(DEBUG, TAG, " ####################OPEN JSON DB %s", credFile);
+    OC_LOG_V(DEBUG, TAG, "############FOPEN ############### path %s mode %s EXISTS %d", credFile, mode, file_exist(credFile));
+
+    assert(file_exist(credFile));
 
     FILE* file = fopen(credFile, mode);
 
+    assert(file != NULL);
+
     if (file == NULL) {
+        OC_LOG_V(ERROR, TAG, "###########################");
         OC_LOG_V(ERROR, TAG, "########################### FAIL OPEN DB file %s mode %s errno %d", credFile, mode, errno);
+        OC_LOG_V(ERROR, TAG, "###########################");
     }
 
     return file;
@@ -112,13 +109,14 @@ FILE* server_fopen(const char *path, const char *mode)
 
 void PrintUsage()
 {
-    std::cout << "Usage : stbserver -ipv4 <0|1> -ipv6 <0|1> --highqos <0|1>" << std::endl;
+    std::cout << "Usage : oicfridgeserver -ipv4 <0|1> -ipv6 <0|1> -secure <0|1> --highqos <0|1>" << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
     int ipv4 = 1;
     int ipv6 = 1;
+    int secure = 1;
     int q = 1;
     OC::QualityOfService qos = OC::QualityOfService::HighQos;
 
@@ -142,6 +140,11 @@ int main(int argc, char* argv[])
             ipv6 = atoi(argv[opt + 1]);
             std::cout << "ipv6 passed = " << ipv6 << std::endl;
         }
+        else if (!strcmp(argv[opt], "-secure") || !strcmp(argv[opt], "--secure") )
+        {
+            secure = atoi(argv[opt + 1]);
+            std::cout << "secure passed = " << secure << std::endl;
+        }
         else if (!strcmp(argv[opt], "-highqos") || !strcmp(argv[opt], "--highqos") )
         {
             int q = atoi(argv[opt + 1]);
@@ -154,7 +157,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    std::cout <<  "Start STB server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " qos = "  << q << std::endl;
+    std::cout <<  "Start Aircond server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " secure = " << secure << " qos = "  << q << std::endl;
 
     if (!file_exist(JSON_PATH.c_str()))
     {
@@ -188,9 +191,9 @@ int main(int argc, char* argv[])
     if (ipv6)
         ctVal |= CA_IPV6;
 
-#if SECURE
+    if (secure)
         ctVal |= CA_SECURE;
-#endif
+
     OCConnectivityType ct =  (OCConnectivityType) (ctVal);
 
     PlatformConfig cfg
@@ -247,13 +250,9 @@ int main(int argc, char* argv[])
     }
 
     // 5-Create resources
-#if SECURE
-    SetTopBox stb(true);
-    std::cout << "Secure server" << std::endl;
-#else
-    SetTopBox stb(false);
-    std::cout << "UnSecure server " << std::endl;
-#endif
+    bool sec = secure == 1;
+    Aircond frg(sec);
+
     // we will keep the server alive for at most 12 hours
     std::this_thread::sleep_for(std::chrono::hours(12));
     return 0;

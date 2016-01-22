@@ -32,27 +32,21 @@
 #include "srmutility.h"
 #include "pmtypes.h"
 #include "OCPlatform.h"
-#include "Refrigeration.h"
-#include "Temperature.h"
+#include "AudioResource.h"
 #include "BinarySwitch.h"
-#include "Door.h"
-#include "OpenLevel.h"
-#include "Brightness.h"
-#include "ColourChroma.h"
-#include "Contact.h"
-#include "Water.h"
-#include "IceMaker.h"
+#include "MediaSource.h"
+#include "NightMode.h"
+
 
 using namespace OC;
-namespace PH = std::placeholders;
 /* Device Info */
-const std::string DEVICE_NAME = "oic-fridge";
+const std::string DEVICE_NAME = "Set-Top-Box";
 
 /* Platform Info */
 const std::string DATE_OF_MANUFACTURE = "January 14th, 2015";
 const std::string DEVICE_UUID = "";
 const std::string FIRMWARE_VERSION = "15.1";
-const std::string HARDWARE_VERSION = "myHardwareVersion";
+const std::string HARDWARE_VERSION = "1.0";
 const std::string MANUFACTURER_NAME = "Cisco";
 const std::string MANUFACTURER_URL = "http://www.cisco.com";
 const std::string MODEL_NUMBER = "7448_LLC";
@@ -68,61 +62,48 @@ const std::string OIC_WK_D = "oic.wk.d";
 const std::string OIC_D_TV = "oic.d.tv";
 //oic_svr_db_server.json
 //oic_svr_db.json
-const std::string JSON_FILE = "oic_fridge_server.json";
+const std::string JSON_FILE = "oic_stb_server.json";
 const std::string JSON_PATH  = getUserHome() + "/" + JSON_FILE;
 
-#define TAG  "FRIDGE-SERVER"
+#define TAG  "STB-SERVER"
 
-class Fridge
+class SetTopBox
 {
 public:
-    Fridge() : Fridge(false)
+    SetTopBox() : SetTopBox(false)
     {}
 
-    Fridge(bool secure) : m_power ("/sec/fridge/power", secure),
-        m_ice_maker ("/sec/fridge/icemaker", secure),
-        m_refr ("/sec/fridge/refrigeration", secure),
-        m_cooler ("/sec/fridge/cooler/temp", secure),
-        m_freezer("/sec/fridge/freezer/temp", secure),
-        m_cooler_door("/sec/fridge/cooler/door", secure),
-        m_freezer_door("/sec/fridge/freezer/door", secure),
-        m_cv_door("/sec/fridge/cvroom/door", secure),
-        m_open_level("/sec/fridge/openlevel", secure),
-        m_brightness("/sec/fridge/light/1/brightness", secure),
-        m_colour_chroma("/sec/fridge/light/1/chroma", secure),
-        m_contact("/sec/fridge/sensor/contact", secure),
-        m_water("/sec/fridge/sensor/water", secure)
+    SetTopBox(bool secure) : m_audio ("/stb/audio", secure),
+        m_bswitch ("/stb/binaryswitch", secure),
+        m_media ("/stb/media", getSources(), secure),
+        m_nightmode("/stb/nightmode", secure)
     {}
 
 private:
-    BinarySwitch m_power;
-    IceMaker m_ice_maker;
-    Refrigeration m_refr;
-    Temperature m_cooler, m_freezer;
-    Door m_cooler_door, m_freezer_door, m_cv_door;
-    OpenLevel m_open_level;
-    Brightness m_brightness;
-    ColourChroma m_colour_chroma;
-    Contact m_contact;
-    Water m_water;
+    AudioControl m_audio;
+    BinarySwitch m_bswitch;
+    MediaSourceList m_media;
+    NightMode m_nightmode;
+
+    std::vector<MediaSource> getSources()
+    {
+        std::vector<MediaSource> sources;
+        MediaSource src = MediaSource("HDMI", 1, MSL_TYPE_AV, true);
+        sources.push_back(src);
+        return sources;
+    }
 };
 
 FILE* server_fopen(const char *path, const char *mode)
 {
     (void)path;
     const char* credFile = JSON_PATH.c_str();
-    OC_LOG_V(DEBUG, TAG, "############FOPEN ############### path %s mode %s EXISTS %d", credFile, mode, file_exist(credFile));
-
-    assert(file_exist(credFile));
+    OC_LOG_V(DEBUG, TAG, " ####################OPEN JSON DB %s", credFile);
 
     FILE* file = fopen(credFile, mode);
 
-    assert(file != NULL);
-
     if (file == NULL) {
-        OC_LOG_V(ERROR, TAG, "###########################");
         OC_LOG_V(ERROR, TAG, "########################### FAIL OPEN DB file %s mode %s errno %d", credFile, mode, errno);
-        OC_LOG_V(ERROR, TAG, "###########################");
     }
 
     return file;
@@ -130,7 +111,7 @@ FILE* server_fopen(const char *path, const char *mode)
 
 void PrintUsage()
 {
-    std::cout << "Usage : oicfridgeserver -ipv4 <0|1> -ipv6 <0|1> --highqos <0|1>" << std::endl;
+    std::cout << "Usage : stbserver -ipv4 <0|1> -ipv6 <0|1> --highqos <0|1>" << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -172,7 +153,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    std::cout <<  "Start Fridge server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " qos = "  << q << std::endl;
+    std::cout <<  "Start STB server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " qos = "  << q << std::endl;
 
     if (!file_exist(JSON_PATH.c_str()))
     {
@@ -180,17 +161,15 @@ int main(int argc, char* argv[])
         //exit(-1);
     }
 
-    int result;
-#if SECURE
     OCPersistentStorage ps = { server_fopen, fread, fwrite, fclose, unlink };
-    result = OCRegisterPersistentStorageHandler(&ps);
+    int result = OCRegisterPersistentStorageHandler(&ps);
 
     if (result != OC_STACK_OK)
     {
         OC_LOG_V(ERROR, TAG, "OCRegisterPersistentStorageHandler Failed %d", result);
         return -1;
     }
-#endif
+
     result = OCInit(NULL, 0, OC_SERVER);
 
     if (result != OC_STACK_OK)
@@ -208,10 +187,9 @@ int main(int argc, char* argv[])
     if (ipv6)
         ctVal |= CA_IPV6;
 
-#if SECURE
-    ctVal |= CA_SECURE;
+#ifdef SECURE
+        ctVal |= CA_SECURE;
 #endif
-
     OCConnectivityType ct =  (OCConnectivityType) (ctVal);
 
     PlatformConfig cfg
@@ -220,12 +198,8 @@ int main(int argc, char* argv[])
         ModeType::Server,
         "0.0.0.0", // By setting to "0.0.0.0", it binds to all available interfaces
         0,         // Uses randomly available port
-#if SECURE
         qos,
         &ps
-#else
-        qos
-#endif
     };
 
     cfg.clientConnectivity = ct;
@@ -272,12 +246,13 @@ int main(int argc, char* argv[])
     }
 
     // 5-Create resources
-#if SECURE
-    Fridge frg(true);
+#ifdef SECURE
+    SetTopBox stb(true);
+    std::cout << "Secure server" << std::endl;
 #else
-    Fridge frg(false);
+    SetTopBox stb(false);
+    std::cout << "UnSecure server " << std::endl;
 #endif
-
     // we will keep the server alive for at most 12 hours
     std::this_thread::sleep_for(std::chrono::hours(12));
     return 0;

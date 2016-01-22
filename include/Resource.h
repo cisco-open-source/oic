@@ -1,6 +1,5 @@
 #ifndef __OIC_RESOURCE_H
 #define __OIC_RESOURCE_H
-#define SECURE 1
 
 #include <iostream>
 #include <thread>
@@ -14,8 +13,8 @@
 #include "Observer.h"
 
 using namespace OC;
-namespace PH = std::placeholders;
 
+namespace PH = std::placeholders;
 /* Resource types */
 const std::string OIC_IF_BASE = "oic.if.baseline";
 const std::string OIC_IF_A = "oic.if.a";

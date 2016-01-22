@@ -32,21 +32,26 @@
 #include "srmutility.h"
 #include "pmtypes.h"
 #include "OCPlatform.h"
-#include "Mode.h"
+#include "Refrigeration.h"
 #include "Temperature.h"
 #include "BinarySwitch.h"
-#include "AirFlow.h"
+#include "Door.h"
+#include "OpenLevel.h"
+#include "Brightness.h"
+#include "ColourChroma.h"
+#include "Contact.h"
+#include "Water.h"
+#include "IceMaker.h"
 
 using namespace OC;
-namespace PH = std::placeholders;
 /* Device Info */
-const std::string DEVICE_NAME = "oic-aircond";
+const std::string DEVICE_NAME = "oic-fridge";
 
 /* Platform Info */
 const std::string DATE_OF_MANUFACTURE = "January 14th, 2015";
 const std::string DEVICE_UUID = "";
 const std::string FIRMWARE_VERSION = "15.1";
-const std::string HARDWARE_VERSION = "1.0";
+const std::string HARDWARE_VERSION = "myHardwareVersion";
 const std::string MANUFACTURER_NAME = "Cisco";
 const std::string MANUFACTURER_URL = "http://www.cisco.com";
 const std::string MODEL_NUMBER = "7448_LLC";
@@ -62,29 +67,43 @@ const std::string OIC_WK_D = "oic.wk.d";
 const std::string OIC_D_TV = "oic.d.tv";
 //oic_svr_db_server.json
 //oic_svr_db.json
-const std::string JSON_FILE = "oic_ac_server.json";
+const std::string JSON_FILE = "oic_fridge_server.json";
 const std::string JSON_PATH  = getUserHome() + "/" + JSON_FILE;
 
-#define TAG  "Aircond-SERVER"
+#define TAG  "FRIDGE-SERVER"
 
-class Aircond
+class Fridge
 {
 public:
-    Aircond() : Aircond(false)
+    Fridge() : Fridge(false)
     {}
 
-    Aircond(bool secure) : m_power ("/sec/aircon/power", secure),
-        m_temp ("/sec/aircon/temperature", secure),
-        m_airflow("/sec/aircon/airFlow", secure),
-        m_mode("/sec/aircon/mode", secure)
+    Fridge(bool secure) : m_power ("/sec/fridge/power", secure),
+        m_ice_maker ("/sec/fridge/icemaker", secure),
+        m_refr ("/sec/fridge/refrigeration", secure),
+        m_cooler ("/sec/fridge/cooler/temp", secure),
+        m_freezer("/sec/fridge/freezer/temp", secure),
+        m_cooler_door("/sec/fridge/cooler/door", secure),
+        m_freezer_door("/sec/fridge/freezer/door", secure),
+        m_cv_door("/sec/fridge/cvroom/door", secure),
+        m_open_level("/sec/fridge/openlevel", secure),
+        m_brightness("/sec/fridge/light/1/brightness", secure),
+        m_colour_chroma("/sec/fridge/light/1/chroma", secure),
+        m_contact("/sec/fridge/sensor/contact", secure),
+        m_water("/sec/fridge/sensor/water", secure)
     {}
 
 private:
     BinarySwitch m_power;
-    Temperature m_temp;
-    AirFlow m_airflow;
-    Modes m_mode;
-
+    IceMaker m_ice_maker;
+    Refrigeration m_refr;
+    Temperature m_cooler, m_freezer;
+    Door m_cooler_door, m_freezer_door, m_cv_door;
+    OpenLevel m_open_level;
+    Brightness m_brightness;
+    ColourChroma m_colour_chroma;
+    Contact m_contact;
+    Water m_water;
 };
 
 FILE* server_fopen(const char *path, const char *mode)
@@ -110,14 +129,13 @@ FILE* server_fopen(const char *path, const char *mode)
 
 void PrintUsage()
 {
-    std::cout << "Usage : oicfridgeserver -ipv4 <0|1> -ipv6 <0|1> -secure <0|1> --highqos <0|1>" << std::endl;
+    std::cout << "Usage : oicfridgeserver -ipv4 <0|1> -ipv6 <0|1> --highqos <0|1>" << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
     int ipv4 = 1;
     int ipv6 = 1;
-    int secure = 1;
     int q = 1;
     OC::QualityOfService qos = OC::QualityOfService::HighQos;
 
@@ -141,11 +159,6 @@ int main(int argc, char* argv[])
             ipv6 = atoi(argv[opt + 1]);
             std::cout << "ipv6 passed = " << ipv6 << std::endl;
         }
-        else if (!strcmp(argv[opt], "-secure") || !strcmp(argv[opt], "--secure") )
-        {
-            secure = atoi(argv[opt + 1]);
-            std::cout << "secure passed = " << secure << std::endl;
-        }
         else if (!strcmp(argv[opt], "-highqos") || !strcmp(argv[opt], "--highqos") )
         {
             int q = atoi(argv[opt + 1]);
@@ -158,7 +171,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    std::cout <<  "Start Aircond server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " secure = " << secure << " qos = "  << q << std::endl;
+    std::cout <<  "Start Fridge server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " qos = "  << q << std::endl;
 
     if (!file_exist(JSON_PATH.c_str()))
     {
@@ -166,15 +179,17 @@ int main(int argc, char* argv[])
         //exit(-1);
     }
 
+    int result;
+#ifdef SECURE
     OCPersistentStorage ps = { server_fopen, fread, fwrite, fclose, unlink };
-    int result = OCRegisterPersistentStorageHandler(&ps);
+    result = OCRegisterPersistentStorageHandler(&ps);
 
     if (result != OC_STACK_OK)
     {
         OC_LOG_V(ERROR, TAG, "OCRegisterPersistentStorageHandler Failed %d", result);
         return -1;
     }
-
+#endif
     result = OCInit(NULL, 0, OC_SERVER);
 
     if (result != OC_STACK_OK)
@@ -192,8 +207,9 @@ int main(int argc, char* argv[])
     if (ipv6)
         ctVal |= CA_IPV6;
 
-    if (secure)
-        ctVal |= CA_SECURE;
+#ifdef SECURE
+    ctVal |= CA_SECURE;
+#endif
 
     OCConnectivityType ct =  (OCConnectivityType) (ctVal);
 
@@ -203,8 +219,12 @@ int main(int argc, char* argv[])
         ModeType::Server,
         "0.0.0.0", // By setting to "0.0.0.0", it binds to all available interfaces
         0,         // Uses randomly available port
+#ifdef SECURE
         qos,
         &ps
+#else
+        qos
+#endif
     };
 
     cfg.clientConnectivity = ct;
@@ -251,8 +271,11 @@ int main(int argc, char* argv[])
     }
 
     // 5-Create resources
-    bool sec = secure == 1;
-    Aircond frg(sec);
+#ifdef SECURE
+    Fridge frg(true);
+#else
+    Fridge frg(false);
+#endif
 
     // we will keep the server alive for at most 12 hours
     std::this_thread::sleep_for(std::chrono::hours(12));

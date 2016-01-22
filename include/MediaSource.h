@@ -5,7 +5,6 @@
 #include "ocpayload.h"
 
 using namespace OC;
-namespace PH = std::placeholders;
 
 /* Resource types */
 const std::string OIC_R_MEDIA_SOURCE_LIST = "oic.r.media.input";
