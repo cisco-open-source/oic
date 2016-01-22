@@ -8,3 +8,5 @@ OIC resource default implementation
 
 * build
 
+ `scons resource/oic`
+
