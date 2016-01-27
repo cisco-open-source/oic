@@ -94,8 +94,8 @@ Alias("samples", [stbserver, oicfridgeserver, oicacserver, input_key])
 env.AppendTarget('samples')
 
 src_dir = samples_env.get('SRC_DIR')
-svr_db_src_dir = src_dir + '/resource/oic/samples'
-svr_db_build_dir = env.get('BUILD_DIR') +'/resource/oic/samples'
+svr_db_src_dir = src_dir + '/resource/oic/samples/'
+svr_db_build_dir = env.get('BUILD_DIR') +'/resource/oic/samples/'
 samples_env.Alias("install", samples_env.Install( svr_db_build_dir,
                 svr_db_src_dir + 'oic_svr_db_client.json'))
 samples_env.Alias("install", samples_env.Install( svr_db_build_dir,

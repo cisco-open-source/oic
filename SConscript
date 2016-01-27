@@ -31,8 +31,8 @@ oic_env = lib_env.Clone()
 ######################################################################
 # Build flags
 ######################################################################
-oic_env.AppendUnique(CPPPATH = [
-		'./include/',
+oic_env.PrependUnique(CPPPATH = [
+		'include',
 		'../include/',
 		'../csdk/stack/include',
 		'../csdk/security/include',
@@ -61,7 +61,7 @@ if env.get('SECURED') == '1':
 target_os = env.get('TARGET_OS')
 
 if target_os not in ['windows', 'winrt']:
-	oic_env.AppendUnique(CXXFLAGS = ['-std=gnu++0x', '-Wall', '-pthread'])
+	oic_env.AppendUnique(CXXFLAGS = ['-std=c++0x', '-Wall', '-pthread'])
 
 	# Note: 'pthread' is in libc for android. On other platform, if use
 	# new gcc(>4.9?) it isn't required, otherwise, it's required
@@ -90,5 +90,5 @@ oic_src = [
 
 oic = oic_env.StaticLibrary('oic', oic_src)
 oic_env.InstallTarget(oic, 'liboic')
+SConscript('samples/SConscript')
 
-SConscript('examples/SConscript')
