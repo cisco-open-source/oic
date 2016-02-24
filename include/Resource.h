@@ -282,12 +282,15 @@ protected:
         m_rep.addResourceInterface(interface);
     }
 
-    OCEntityHandlerResult send(const std::shared_ptr<OCResourceResponse> pResponse, OCEntityHandlerResult defaultRes)
+    OCEntityHandlerResult send(const std::shared_ptr<OCResourceResponse> pResponse, OCEntityHandlerResult handlerRes)
     {
-        pResponse->setResponseResult(defaultRes);
+        pResponse->setResponseResult(handlerRes);
+
+        if (handlerRes == OC_EH_OK)
+            pResponse->setErrorCode(200);
 
         if (OC_STACK_OK == OCPlatform::sendResponse(pResponse))
-            return defaultRes;
+            return handlerRes;
 
         return OC_EH_ERROR;
     }
