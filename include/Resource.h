@@ -88,9 +88,9 @@ protected:
         }
 
         m_rep.setUri(uri);
-        m_rep.addResourceType(rt);
-        m_rep.addResourceInterface(OIC_IF_BASE);
-        m_rep.addResourceInterface(rif);
+        addType(rt);
+        addInterface(OIC_IF_BASE);
+        addInterface(rif);
         IoTObserverCb obsCb = bind(&Resource::observe, this);
         m_observerLoop = make_shared<IoTObserver>(obsCb);
     }
@@ -181,45 +181,53 @@ protected:
             auto pResponse = std::make_shared<OC::OCResourceResponse>();
             pResponse->setRequestHandle(request->getRequestHandle());
             pResponse->setResourceHandle(request->getResourceHandle());
+            QueryParamsMap queries = request->getQueryParameters();
+            std::string reqInterface = queries[OC::Key::INTERFACESKEY];
 
             if (rt == "GET")
             {
-                std::cout << uri << " GET Request" << std::endl;
-                pResponse->setErrorCode(200);
-                pResponse->setResourceRepresentation(get(), "");
+                std::cout << uri << " GET Request reqInterface " << reqInterface << std::endl;
 
-                if (OC_STACK_OK == OCPlatform::sendResponse(pResponse))
+                if (reqInterface.empty() || reqInterface == OIC_IF_BASE)
                 {
-                    ehResult = OC_EH_OK;
+                    pResponse->setResourceRepresentation(get(), "");
+                    ehResult = send(pResponse, OC_EH_OK);
                 }
-            }
-            else if (rt == "POST")
+                else 
+                {
+                    if (!checkInterface(get(), reqInterface))
+                    {
+                        std::cout << uri << " GET Request wrong reqInterface" << reqInterface << std::endl;
+                        ehResult = send(pResponse, OC_EH_ERROR);
+                    }
+                    else
+                    {
+                        pResponse->setResourceRepresentation(get(), "");
+                        ehResult = send(pResponse, OC_EH_OK);
+                    }
+                }
+        }
+        else if (rt == "POST")
             {
                 std::cout << uri << "POST Request" << std::endl;
                 int ret = put(request->getResourceRepresentation());
 
                 if (ret < 0)
                 {
-                    pResponse->setResponseResult(OC_EH_ERROR);
-                    OCPlatform::sendResponse(pResponse);
-                    ehResult = OC_EH_ERROR;
+                    ehResult = send(pResponse, OC_EH_ERROR);
                 }
                 else
                 {
                     if (ret > 0)
                         ++change;
 
-                    pResponse->setErrorCode(200);
                     pResponse->setResourceRepresentation(get(), "");
-
-                    if (OC_STACK_OK == OCPlatform::sendResponse(pResponse))
-                    {
-                        ehResult = OC_EH_OK;
-                    }
+                    ehResult = send(pResponse, OC_EH_OK);
                 }
             }
             else return unsupported(rt, pResponse); //PUT DELETE not supported yet
         }
+
         if (rhf & RequestHandlerFlag::ObserverFlag)
         {
             std::cout << uri << " ObserveFlag " << std::endl;
@@ -274,5 +282,14 @@ protected:
         m_rep.addResourceInterface(interface);
     }
 
+    OCEntityHandlerResult send(const std::shared_ptr<OCResourceResponse> pResponse, OCEntityHandlerResult defaultRes)
+    {
+        pResponse->setResponseResult(defaultRes);
+
+        if (OC_STACK_OK == OCPlatform::sendResponse(pResponse))
+            return defaultRes;
+
+        return OC_EH_ERROR;
+    }
 };
 #endif

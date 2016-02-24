@@ -27,6 +27,25 @@ char* duplicateStr(const std::string sourceString)
     return strdup(sourceString.c_str());
 }
 
+void printOCResource(const OCResource& oCResource)
+{
+    printf( "PrintfOcResource\n");
+    printf( "\tRes[sId] = %s\n", oCResource.sid().c_str());
+    printf( "\tRes[Uri] = %s\n", oCResource.uri().c_str());
+    printf( "\tRes[Host] = %s\n", oCResource.host().c_str());
+    printf( "\tRes[Resource types]:\n");
+
+    for (const auto& resourceTypes : oCResource.getResourceTypes()) {
+        printf( "\t\t%s\n", resourceTypes.c_str());
+    }
+
+    printf( "Res[Resource interfaces] \n");
+
+    for (const auto& resourceInterfaces : oCResource.getResourceInterfaces()) {
+        printf( "\t\t%s\n", resourceInterfaces.c_str());
+    }
+}
+
 void printOCRep(const OCRepresentation &oCRepr)
 {
     printf(">>printOCRep:\n");

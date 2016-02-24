@@ -28,7 +28,6 @@ SConscript(env.get('SRC_DIR') + '/resource/third_party_libs.scons', 'lib_env')
 
 samples_env = lib_env.Clone()
 
-secured = samples_env.get('SECURED')
 
 ######################################################################
 # Build flags
@@ -85,12 +84,13 @@ if target_os in ['darwin', 'ios']:
 ######################################################################
 # Source files and Targets
 ######################################################################
+stbclient = samples_env.Program('stbclient', ['stbclient.cpp'])
 stbserver = samples_env.Program('stbserver', ['stbserver.cpp'])
 oicfridgeserver = samples_env.Program('oicfridgeserver', ['oicfridgeserver.cpp'])
 oicacserver = samples_env.Program('oicacserver', ['oicacserver.cpp'])
 input_key = samples_env.Program('input_key', ['input_key.c'])
 
-Alias("samples", [stbserver, oicfridgeserver, oicacserver, input_key])
+Alias("samples", [stbclient, stbserver, oicfridgeserver, oicacserver, input_key])
 env.AppendTarget('samples')
 
 src_dir = samples_env.get('SRC_DIR')

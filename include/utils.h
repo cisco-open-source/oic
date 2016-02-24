@@ -21,6 +21,8 @@ std::string getUserHome();
 
 bool file_exist(const char *filename);
 
+void printOCResource(const OCResource& oCResource);
+
 void printOCRep(const OCRepresentation &rep);
 
 bool checkType(const OCRepresentation &rep, const std::string requiredType);
