@@ -33,87 +33,46 @@
 
 using namespace OC;
 
-typedef std::map<OCResourceIdentifier, std::shared_ptr<OCResource>> DiscoveredResourceMap;
-
-DiscoveredResourceMap discoveredResources;
-static ObserveType OBSERVE_TYPE_TO_USE = ObserveType::Observe;
+std::shared_ptr<OCResource> curResource;
 
 // Callback handler on GET request
 void onGet(const HeaderOptions&, const OCRepresentation& rep, const int eCode)
 {
-    if (eCode == OC_STACK_OK)
-    {
-        std::cout << "GET request was successful" << std::endl;
-        printOCRep(rep);
-    }
-    else
-    {
-        std::cout << "onGET Response error: " << eCode << std::endl;
-        std::exit(-1);
-    }
+    std::cout << "GET request was successful" << std::endl;
+    //printOCRep(rep);
 }
 
-void getRepresentation(std::shared_ptr<OCResource> resource, std::string type, std::string interface)
+void onGetDevice(const OCRepresentation& rep)
 {
-    std::cout << "Getting Representation " << resource->uri() << " type " << type << " interface " << interface << std::endl;
-
-    if (resource)
-    {
-        QueryParamsMap test;
-        resource->get(type, interface, test, &onGet);
-    }
+    std::cout << "GET Device request was successful" << std::endl;
+    //printOCRep(rep);
 }
 
 // Callback to found resources
 void foundResource(std::shared_ptr<OCResource> resource)
 {
-    std::cout << "In foundResource\n";
-    std::string resourceURI;
-    std::string hostAddress;
-    try
+
+    if (resource->uri() == "/oic/d" && !curResource)
     {
-        // Do some operations with resource object.
-        if (resource)
-        {
-            std::cout << "DISCOVERED Resource:" << std::endl;
-            // Get the resource URI
-            resourceURI = resource->uri();
-            std::cout << "\tURI of the resource: " << resourceURI << std::endl;
+        curResource = resource;
+        std::cout << "DISCOVERED Resource:" << std::endl;
+        std::cout << "\tURI of the resource: " << resource->uri() << std::endl;
+        std::cout << "\tHost address of the resource: " << resource->host() << std::endl;
+        std::cout << "\tList of resource types: " << std::endl;
 
-            // Get the resource host address
-            hostAddress = resource->host();
-            std::cout << "\tHost address of the resource: " << hostAddress << std::endl;
-
-            // Get the resource types
-            std::cout << "\tList of resource types: " << std::endl;
-            for (auto &resourceTypes : resource->getResourceTypes())
-            {
-                std::cout << "\t\t" << resourceTypes << std::endl;
-                // Get the resource interfaces
-                std::cout << "\t\tList of resource interfaces: " << std::endl;
-                for (auto &resourceInterfaces : resource->getResourceInterfaces())
-                {
-                    std::cout << "\t\t\t" << resourceInterfaces << std::endl;
-                }
-            }
-            for (auto &resourceTypes : resource->getResourceTypes())
-            {
-                for (auto &resourceInterfaces : resource->getResourceInterfaces())
-                {
-                    getRepresentation(resource, resourceTypes, resourceInterfaces);
-                }
-            }
-        }
-        else
+        for (auto &resourceTypes : resource->getResourceTypes())
         {
-            // Resource is invalid
-            std::cout << "Resource is invalid" << std::endl;
+            std::cout << "\t\t" << resourceTypes << std::endl;
         }
 
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << "Exception in foundResource: " << e.what() << std::endl;
+        std::cout << "\tList of resource interfaces: " << std::endl;
+        for (auto &resourceInterfaces : resource->getResourceInterfaces())
+        {
+            std::cout << "\t\t" << resourceInterfaces << std::endl;
+        }
+
+        QueryParamsMap test;
+        resource->get(test, &onGet);
     }
 }
 
@@ -122,12 +81,39 @@ static FILE* client_open(const char* /*path*/, const char *mode)
     return fopen("./oic_svr_db_client.json", mode);
 }
 
+void PrintUsage()
+{
+    std::cout << "Usage : stbserver [-res|-dev]" << std::endl;
+}
+
 int main(int argc, char* argv[]) {
+    int dev = 0, res = 0;
+
+    std::cout << "main " << argc << std::endl;
+    for (int opt = 1; opt < argc; opt++ )
+    {
+        std::cout << "opt nb = " << opt << " key = " <<  argv[opt] << " val = " << argv[opt + 1] << std::endl;
+
+        if (!strcmp(argv[opt], "-dev") || !strcmp(argv[opt], "--dev"))
+        {
+            dev = 1;
+            std::cout << "dev passed = " << dev << std::endl;
+        }
+        else if (!strcmp(argv[opt], "-res") || !strcmp(argv[opt], "--res"))
+        {
+            res = 1;
+            std::cout << "res passed = " << res << std::endl;
+        }
+    }
+
+    if (dev == 0 && res == 0)
+    {
+        std::cout << "Print help" << std::endl;
+        PrintUsage(); return -1;
+    }
 
     std::ostringstream requestURI;
     OCPersistentStorage ps {client_open, fread, fwrite, fclose, unlink };
-
-    // Create PlatformConfig object
     PlatformConfig cfg {
         OC::ServiceType::InProc,
         OC::ModeType::Both,
@@ -138,28 +124,20 @@ int main(int argc, char* argv[]) {
     };
 
     OCPlatform::Configure(cfg);
-    try
-    {
-        // makes it so that all boolean values are printed as 'true/false' in this stream
-        std::cout.setf(std::ios::boolalpha);
-        // Find all resources
-        requestURI << OC_RSRVD_WELL_KNOWN_URI;// << "?rt=core.light";
+    std::cout.setf(std::ios::boolalpha);
+    std::string host = "";
 
-        OCPlatform::findResource("", requestURI.str(),
+    if (dev)
+        OCPlatform::getDeviceInfo(host, OC_RSRVD_DEVICE_URI, CT_DEFAULT,
+                                  &onGetDevice);
+    if (res)
+        OCPlatform::findResource("", OC_RSRVD_WELL_KNOWN_URI,
                                  CT_DEFAULT, &foundResource);
-        std::cout << "Finding Resource... " << std::endl;
 
-        std::mutex blocker;
-        std::condition_variable cv;
-        std::unique_lock<std::mutex> lock(blocker);
-        cv.wait(lock);
-
-    } catch (OCException& e)
-    {
-        oclog() << "Exception in main: " << e.what();
-    }
+    std::mutex blocker;
+    std::condition_variable cv;
+    std::unique_lock<std::mutex> lock(blocker);
+    cv.wait(lock);
 
     return 0;
 }
-
-
