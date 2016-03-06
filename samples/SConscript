@@ -56,8 +56,8 @@ samples_env.AppendUnique(CPPPATH = [
 samples_env.PrependUnique(LIBS = ['oic', 'oc', 'octbstack', 'oc_logger', 'connectivity_abstraction', 'coap'])
 
 if env.get('SECURED') == '1':
-	oic_env.AppendUnique(LIBS = ['ocpmapi', 'tinydtls'])
-	oic_env.AppendUnique(CPPDEFINES = ['SECURE'])
+	samples_env.AppendUnique(LIBS = ['ocpmapi', 'tinydtls'])
+	samples_env.AppendUnique(CPPDEFINES = ['SECURE'])
 
 target_os = env.get('TARGET_OS')
 if target_os not in ['windows', 'winrt']:
