@@ -31,13 +31,13 @@
 #include "securevirtualresourcetypes.h"
 #include "srmutility.h"
 #include "pmtypes.h"
-#include "OCPlatform.h"
+#include "OICPlatform.h"
 #include "Mode.h"
 #include "Temperature.h"
 #include "BinarySwitch.h"
 #include "AirFlow.h"
 
-using namespace OC;
+using namespace OIC;
 /* Device Info */
 const std::string DEVICE_NAME = "oic-aircond";
 
@@ -90,7 +90,7 @@ FILE* server_fopen(const char *path, const char *mode)
 {
     (void)path;
     const char* credFile = JSON_PATH.c_str();
-    OC_LOG_V(DEBUG, TAG, "############FOPEN ############### path %s mode %s EXISTS %d", credFile, mode, file_exist(credFile));
+    OIC_LOG_V(DEBUG, TAG, "############FOPEN ############### path %s mode %s EXISTS %d", credFile, mode, file_exist(credFile));
 
     assert(file_exist(credFile));
 
@@ -99,9 +99,9 @@ FILE* server_fopen(const char *path, const char *mode)
     assert(file != NULL);
 
     if (file == NULL) {
-        OC_LOG_V(ERROR, TAG, "###########################");
-        OC_LOG_V(ERROR, TAG, "########################### FAIL OPEN DB file %s mode %s errno %d", credFile, mode, errno);
-        OC_LOG_V(ERROR, TAG, "###########################");
+        OIC_LOG_V(ERROR, TAG, "###########################");
+        OIC_LOG_V(ERROR, TAG, "########################### FAIL OPEN DB file %s mode %s errno %d", credFile, mode, errno);
+        OIC_LOG_V(ERROR, TAG, "###########################");
     }
 
     return file;
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
     int ipv6 = 1;
     int secure = 1;
     int q = 1;
-    OC::QualityOfService qos = OC::QualityOfService::HighQos;
+    OIC::QualityOfService qos = OIC::QualityOfService::HighQos;
 
     if (argc == 2 && (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")))
     {
@@ -151,9 +151,9 @@ int main(int argc, char* argv[])
             std::cout << "qos passed = " << q << std::endl;
 
             if (q)
-                qos = OC::QualityOfService::HighQos;
+                qos = OIC::QualityOfService::HighQos;
             else
-                qos = OC::QualityOfService::LowQos;
+                qos = OIC::QualityOfService::LowQos;
         }
     }
 
@@ -165,20 +165,20 @@ int main(int argc, char* argv[])
         //exit(-1);
     }
 
-    OCPersistentStorage ps = { server_fopen, fread, fwrite, fclose, unlink };
-    int result = OCRegisterPersistentStorageHandler(&ps);
+    OICPersistentStorage ps = { server_fopen, fread, fwrite, fclose, unlink };
+    int result = OICRegisterPersistentStorageHandler(&ps);
 
-    if (result != OC_STACK_OK)
+    if (result != OIC_STACK_OK)
     {
-        OC_LOG_V(ERROR, TAG, "OCRegisterPersistentStorageHandler Failed %d", result);
+        OIC_LOG_V(ERROR, TAG, "OICRegisterPersistentStorageHandler Failed %d", result);
         return -1;
     }
 
-    result = OCInit(NULL, 0, OC_SERVER);
+    result = OICInit(NULL, 0, OIC_SERVER);
 
-    if (result != OC_STACK_OK)
+    if (result != OIC_STACK_OK)
     {
-        OC_LOG_V(ERROR, TAG, "OCInit Failed %d", result);
+        OIC_LOG_V(ERROR, TAG, "OICInit Failed %d", result);
         return 0;
     }
 
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
     if (secure)
         ctVal |= CA_SECURE;
 
-    OCConnectivityType ct =  (OCConnectivityType) (ctVal);
+    OICConnectivityType ct =  (OICConnectivityType) (ctVal);
 
     PlatformConfig cfg
     {
@@ -209,10 +209,10 @@ int main(int argc, char* argv[])
     cfg.clientConnectivity = ct;
     cfg.serverConnectivity = ct;
 
-    OCPlatform::Configure(cfg);
+    OICPlatform::Configure(cfg);
 
     // 3-Set Platform info
-    const OCPlatformInfo platformInfo =
+    const OICPlatformInfo platformInfo =
     {
         .platformID = duplicateStr(PLATFORM_ID),
         .manufacturerName = duplicateStr(MANUFACTURER_NAME),
@@ -227,25 +227,25 @@ int main(int argc, char* argv[])
         .systemTime = duplicateStr(SYSTEM_TIME)
     };
 
-    result = OCPlatform::registerPlatformInfo(platformInfo);
+    result = OICPlatform::registerPlatformInfo(platformInfo);
 
-    if (result != OC_STACK_OK)
+    if (result != OIC_STACK_OK)
     {
-        OC_LOG_V(ERROR, TAG, "SetPlatformInfo Failed %d", result);
+        OIC_LOG_V(ERROR, TAG, "SetPlatformInfo Failed %d", result);
         return -1;
     }
 
     // 4-Set Device info
-    const OCDeviceInfo deviceInfo =
+    const OICDeviceInfo deviceInfo =
     {
         .deviceName = duplicateStr(DEVICE_NAME)
     };
 
-    result = OCPlatform::registerDeviceInfo(deviceInfo);
+    result = OICPlatform::registerDeviceInfo(deviceInfo);
 
-    if (result != OC_STACK_OK)
+    if (result != OIC_STACK_OK)
     {
-        OC_LOG_V(ERROR, TAG, "SetDeviceInfo Failed %d\n", result);
+        OIC_LOG_V(ERROR, TAG, "SetDeviceInfo Failed %d\n", result);
         return -1;
     }
 
