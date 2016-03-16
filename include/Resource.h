@@ -1,5 +1,5 @@
-#ifndef __OIC_RESOURCE_H
-#define __OIC_RESOURCE_H
+#ifndef __OC_RESOURCE_H
+#define __OC_RESOURCE_H
 
 #include <iostream>
 #include <thread>
@@ -16,11 +16,11 @@ using namespace OC;
 
 namespace PH = std::placeholders;
 /* Resource types */
-const std::string OIC_IF_BASE = "oic.if.baseline";
-const std::string OIC_IF_A = "oic.if.a";
-const std::string OIC_IF_S = "oic.if.s";
-const std::string OIC_IF_RW = "oic.if.rw";
-const std::string OIC_IF_R = "oic.if.r";
+const std::string OC_IF_BASE = "oic.if.baseline";
+const std::string OC_IF_A = "oic.if.a";
+const std::string OC_IF_S = "oic.if.s";
+const std::string OC_IF_RW = "oic.if.rw";
+const std::string OC_IF_R = "oic.if.r";
 
 class Resource
 {
@@ -89,7 +89,7 @@ protected:
 
         m_rep.setUri(uri);
         addType(rt);
-        addInterface(OIC_IF_BASE);
+        addInterface(OC_IF_BASE);
         addInterface(rif);
         IoTObserverCb obsCb = bind(&Resource::observe, this);
         m_observerLoop = make_shared<IoTObserver>(obsCb);
@@ -188,7 +188,7 @@ protected:
             {
                 std::cout << uri << " GET Request reqInterface " << reqInterface << std::endl;
 
-                if (reqInterface.empty() || reqInterface == OIC_IF_BASE)
+                if (reqInterface.empty() || reqInterface == OC_IF_BASE)
                 {
                     pResponse->setResourceRepresentation(get(), "");
                     ehResult = send(pResponse, OC_EH_OK);

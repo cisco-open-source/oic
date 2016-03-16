@@ -1,12 +1,12 @@
-#ifndef __OIC_R_ICE_MAKER_H
-#define __OIC_R_ICE_MAKER_H
+#ifndef __OC_R_ICE_MAKER_H
+#define __OC_R_ICE_MAKER_H
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_ICE_MAKER = "oic.r.icemaker";
+const std::string OC_R_ICE_MAKER = "oic.r.icemaker";
 
 /* Attributes */
 const std::string ICE_STATUS = "value";
@@ -19,8 +19,8 @@ public:
 
     IceMaker(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_ICE_MAKER,
-                 OIC_IF_A,
+                 OC_R_ICE_MAKER,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<string>(ICE_STATUS, "full");
@@ -32,10 +32,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_ICE_MAKER))
+        if (!checkType(rep, OC_R_ICE_MAKER))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, ICE_STATUS, AttributeType::String))

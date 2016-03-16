@@ -1,5 +1,5 @@
 # oic
-OIC resource default implementation
+OC resource default implementation
 
 #Usage
 * clone in iotivity source tree

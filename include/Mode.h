@@ -1,12 +1,12 @@
-#ifndef __OIC_R_MODE
-#define __OIC_R_MODE
+#ifndef __OC_R_MODE
+#define __OC_R_MODE
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_MODE = "oic.r.mode";
+const std::string OC_R_MODE = "oic.r.mode";
 
 /* Attributes */
 const std::string MODES = "modes";
@@ -20,8 +20,8 @@ public:
 
     Modes(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_MODE,
-                 OIC_IF_A,
+                 OC_R_MODE,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<string>(SUPPORTED_MODES, "home,away,quiet,sleep");
@@ -34,10 +34,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_MODE))
+        if (!checkType(rep, OC_R_MODE))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_S))
+        if (!checkInterface(rep, OC_IF_S))
             return false;
 
         if (!checkAttr(rep, MODES, AttributeType::String) || !checkAttr(rep, SUPPORTED_MODES, AttributeType::String))

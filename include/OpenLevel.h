@@ -1,12 +1,12 @@
-#ifndef __OIC_R_OPEN_LEVEL
-#define __OIC_R_OPEN_LEVEL
+#ifndef __OC_R_OPEN_LEVEL
+#define __OC_R_OPEN_LEVEL
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_OPEN_LEVEL = "oic.r.openlevel";
+const std::string OC_R_OPEN_LEVEL = "oic.r.openlevel";
 
 /* Attributes */
 const std::string OPEN_LEVEL = "openLevel";
@@ -18,8 +18,8 @@ public:
 
     OpenLevel(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_OPEN_LEVEL,
-                 OIC_IF_A,
+                 OC_R_OPEN_LEVEL,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<int>(OPEN_LEVEL, 0);
@@ -31,10 +31,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_OPEN_LEVEL))
+        if (!checkType(rep, OC_R_OPEN_LEVEL))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, OPEN_LEVEL, AttributeType::Integer, false))

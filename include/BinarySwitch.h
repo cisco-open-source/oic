@@ -1,12 +1,12 @@
-#ifndef __OIC_R_SWITCH_BINARY_H
-#define __OIC_R_SWITCH_BINARY_H
+#ifndef __OC_R_SWITCH_BINARY_H
+#define __OC_R_SWITCH_BINARY_H
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_BINARY_SWITCH = "oic.r.switch.binary";
+const std::string OC_R_BINARY_SWITCH = "oic.r.switch.binary";
 
 /* Attributes */
 const std::string VAL = "value";
@@ -19,8 +19,8 @@ public:
 
     BinarySwitch(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_BINARY_SWITCH,
-                 OIC_IF_A,
+                 OC_R_BINARY_SWITCH,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<bool>(VAL, false);
@@ -32,10 +32,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_BINARY_SWITCH))
+        if (!checkType(rep, OC_R_BINARY_SWITCH))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, VAL, AttributeType::Boolean))

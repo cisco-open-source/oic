@@ -1,12 +1,12 @@
-#ifndef __OIC_R_DOOR
-#define __OIC_R_DOOR
+#ifndef __OC_R_DOOR
+#define __OC_R_DOOR
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_DOOR = "oic.r.door";
+const std::string OC_R_DOOR = "oic.r.door";
 
 /* Attributes */
 const std::string OPEN_STATE = "openState";
@@ -19,8 +19,8 @@ public:
 
     Door(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_DOOR,
-                 OIC_IF_A,
+                 OC_R_DOOR,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<bool>(OPEN_ALARM, false);
@@ -32,10 +32,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_DOOR))
+        if (!checkType(rep, OC_R_DOOR))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, OPEN_STATE, AttributeType::String))

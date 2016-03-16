@@ -1,12 +1,12 @@
-#ifndef __OIC_R_COLOURCHROMA
-#define __OIC_R_COLOURCHROMA
+#ifndef __OC_R_COLOURCHROMA
+#define __OC_R_COLOURCHROMA
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_COLOURCHROMA = "oic.r.colour.chroma";
+const std::string OC_R_COLOURCHROMA = "oic.r.colour.chroma";
 
 /* Attributes */
 const std::string HUE = "hue";
@@ -20,8 +20,8 @@ public:
 
     ColourChroma(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_COLOURCHROMA,
-                 OIC_IF_A,
+                 OC_R_COLOURCHROMA,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<int>(HUE, 0);
@@ -35,10 +35,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_COLOURCHROMA))
+        if (!checkType(rep, OC_R_COLOURCHROMA))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, HUE, AttributeType::Integer))

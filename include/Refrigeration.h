@@ -1,12 +1,12 @@
-#ifndef __OIC_R_REFRIGERATION
-#define __OIC_R_REFRIGERATION
+#ifndef __OC_R_REFRIGERATION
+#define __OC_R_REFRIGERATION
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_REFRIGERATION = "oic.r.refrigeration";
+const std::string OC_R_REFRIGERATION = "oic.r.refrigeration";
 
 /* Attributes */
 const std::string FILTER = "filter";
@@ -22,8 +22,8 @@ public:
 
     Refrigeration(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_REFRIGERATION,
-                 OIC_IF_A,
+                 OC_R_REFRIGERATION,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<double>(FILTER, 100);
@@ -38,10 +38,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_REFRIGERATION))
+        if (!checkType(rep, OC_R_REFRIGERATION))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         //Both mandatory

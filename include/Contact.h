@@ -1,12 +1,12 @@
-#ifndef __OIC_R_CONTACT_H
-#define __OIC_R_CONTACT_H
+#ifndef __OC_R_CONTACT_H
+#define __OC_R_CONTACT_H
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_CONTACT = "oic.r.sensor.contact";
+const std::string OC_R_CONTACT = "oic.r.sensor.contact";
 
 /* Attributes */
 const std::string CONTACT_VAL = "value";
@@ -19,8 +19,8 @@ public:
 
     Contact(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_CONTACT,
-                 OIC_IF_S,
+                 OC_R_CONTACT,
+                 OC_IF_S,
                  secure)
     {
         m_rep.setValue<bool>(CONTACT_VAL, false);
@@ -32,10 +32,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_CONTACT))
+        if (!checkType(rep, OC_R_CONTACT))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_S))
+        if (!checkInterface(rep, OC_IF_S))
             return false;
 
         if (!checkAttr(rep, CONTACT_VAL, AttributeType::Boolean))

@@ -1,12 +1,12 @@
-#ifndef __OIC_R_NIGHT_MODE_H
-#define __OIC_R_NIGHT_MODE_H
+#ifndef __OC_R_NIGHT_MODE_H
+#define __OC_R_NIGHT_MODE_H
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_NIGHT_MODE = "oic.r.nightmode";
+const std::string OC_R_NIGHT_MODE = "oic.r.nightmode";
 
 /* Attributes */
 const std::string NM = "nightMode";
@@ -19,8 +19,8 @@ public:
 
     NightMode(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_NIGHT_MODE,
-                 OIC_IF_A,
+                 OC_R_NIGHT_MODE,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<bool>(NM, false);
@@ -32,10 +32,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_NIGHT_MODE))
+        if (!checkType(rep, OC_R_NIGHT_MODE))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, NM, AttributeType::Boolean))

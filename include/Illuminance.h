@@ -1,12 +1,12 @@
-#ifndef __OIC_R_ILLUMINANCE
-#define __OIC_R_ILLUMINANCE
+#ifndef __OC_R_ILLUMINANCE
+#define __OC_R_ILLUMINANCE
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_ILLUMINANCE = "oic.r.sensor.illuminance";
+const std::string OC_R_ILLUMINANCE = "oic.r.sensor.illuminance";
 
 /* Attributes */
 const std::string ILLUMINANCE = "illuminance";
@@ -19,8 +19,8 @@ public:
 
     Illuminance(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_ILLUMINANCE,
-                 OIC_IF_S,
+                 OC_R_ILLUMINANCE,
+                 OC_IF_S,
                  secure)
     {
         m_rep.setValue<double>(ILLUMINANCE, 100);
@@ -32,10 +32,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_ILLUMINANCE))
+        if (!checkType(rep, OC_R_ILLUMINANCE))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_S))
+        if (!checkInterface(rep, OC_IF_S))
             return false;
 
         if (!checkAttr(rep, ILLUMINANCE, AttributeType::Double) && !checkAttr(rep, ILLUMINANCE, AttributeType::Integer))

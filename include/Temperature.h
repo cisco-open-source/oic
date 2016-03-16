@@ -1,12 +1,12 @@
-#ifndef __OIC_R_TEMPERATURE
-#define __OIC_R_TEMPERATURE
+#ifndef __OC_R_TEMPERATURE
+#define __OC_R_TEMPERATURE
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_TEMPERATURE = "oic.r.temperature";
+const std::string OC_R_TEMPERATURE = "oic.r.temperature";
 
 /* Attributes */
 const std::string TEMP = "temperature";
@@ -24,14 +24,14 @@ public:
 
     Temperature(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_TEMPERATURE,
-                 OIC_IF_A,
+                 OC_R_TEMPERATURE,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<double>(TEMP, 0.0);
         m_rep.setValue<string>(UNITS, UNIT_C);
         m_rep.setValue<string>(TEMP_RANGE, "-20,120");
-        addInterface(OIC_IF_S);
+        addInterface(OC_IF_S);
     }
 
 protected:
@@ -40,10 +40,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_TEMPERATURE))
+        if (!checkType(rep, OC_R_TEMPERATURE))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, TEMP, AttributeType::Integer) && !checkAttr(rep, TEMP, AttributeType::Double))

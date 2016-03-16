@@ -1,12 +1,12 @@
-#ifndef __OIC_R_BRIGHTNESS
-#define __OIC_R_BRIGHTNESS
+#ifndef __OC_R_BRIGHTNESS
+#define __OC_R_BRIGHTNESS
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_BRIGHTNESS = "oic.r.light.brightness";
+const std::string OC_R_BRIGHTNESS = "oic.r.light.brightness";
 
 /* Attributes */
 const std::string BRIGHTNESS = "brightness";
@@ -18,8 +18,8 @@ public:
 
     Brightness(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_BRIGHTNESS,
-                 OIC_IF_A,
+                 OC_R_BRIGHTNESS,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<int>(BRIGHTNESS, 0);
@@ -31,10 +31,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_BRIGHTNESS))
+        if (!checkType(rep, OC_R_BRIGHTNESS))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, BRIGHTNESS, AttributeType::Integer, false))

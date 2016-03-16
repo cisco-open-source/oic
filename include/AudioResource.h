@@ -1,12 +1,12 @@
-#ifndef __OIC_R_AUDIO_H
-#define __OIC_R_AUDIO_H
+#ifndef __OC_R_AUDIO_H
+#define __OC_R_AUDIO_H
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_AUDIO = "oic.r.audio";
+const std::string OC_R_AUDIO = "oic.r.audio";
 
 /* Attributes */
 const std::string VOL = "volume";
@@ -19,8 +19,8 @@ public:
 
     AudioControl(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_AUDIO,
-                 OIC_IF_A,
+                 OC_R_AUDIO,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<bool>(MUTE, true);
@@ -33,10 +33,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_AUDIO))
+        if (!checkType(rep, OC_R_AUDIO))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         //both mandatory

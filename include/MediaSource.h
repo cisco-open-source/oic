@@ -1,5 +1,5 @@
-#ifndef __OIC_R_MEDIA_INPUT_H
-#define __OIC_R_MEDIA_INPUT_H
+#ifndef __OC_R_MEDIA_INPUT_H
+#define __OC_R_MEDIA_INPUT_H
 
 #include "Resource.h"
 #include "ocpayload.h"
@@ -7,7 +7,7 @@
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_MEDIA_SOURCE_LIST = "oic.r.media.input";
+const std::string OC_R_MEDIA_SOURCE_LIST = "oic.r.media.input";
 
 /* Attributes */
 const std::string SOURCES = "sources";
@@ -48,8 +48,8 @@ public:
                     std::vector<MediaSource> sources,
                     bool secure) :
         Resource(uri,
-                 OIC_R_MEDIA_SOURCE_LIST,
-                 OIC_IF_A,
+                 OC_R_MEDIA_SOURCE_LIST,
+                 OC_IF_A,
                  secure)
     {
         OCRepresentation rep;
@@ -68,10 +68,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_MEDIA_SOURCE_LIST))
+        if (!checkType(rep, OC_R_MEDIA_SOURCE_LIST))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, SOURCES, AttributeType::Vector))

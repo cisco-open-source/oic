@@ -1,12 +1,12 @@
-#ifndef __OIC_R_AIRFLOW
-#define __OIC_R_AIRFLOW
+#ifndef __OC_R_AIRFLOW
+#define __OC_R_AIRFLOW
 
 #include "Resource.h"
 
 using namespace OC;
 
 /* Resource types */
-const std::string OIC_R_AIRFLOW = "oic.r.airflow";
+const std::string OC_R_AIRFLOW = "oic.r.airflow";
 
 /* Attributes */
 const std::string SPEED = "speed";
@@ -20,8 +20,8 @@ public:
 
     AirFlow(std::string uri, bool secure) :
         Resource(uri,
-                 OIC_R_AIRFLOW,
-                 OIC_IF_A,
+                 OC_R_AIRFLOW,
+                 OC_IF_A,
                  secure)
     {
         m_rep.setValue<int>(SPEED, 0);
@@ -35,10 +35,10 @@ protected:
         if (!Resource::isValid(rep))
             return false;
 
-        if (!checkType(rep, OIC_R_AIRFLOW))
+        if (!checkType(rep, OC_R_AIRFLOW))
             return false;
 
-        if (!checkInterface(rep, OIC_IF_A))
+        if (!checkInterface(rep, OC_IF_A))
             return false;
 
         if (!checkAttr(rep, SPEED, AttributeType::Integer))
