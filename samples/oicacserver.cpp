@@ -116,7 +116,11 @@ int main(int argc, char* argv[])
 {
     int ipv4 = 1;
     int ipv6 = 1;
-    int secure = 1;
+    int secure = 0;
+#ifdef SECURE
+    secure = 1;
+#endif
+
     int q = 1;
     OC::QualityOfService qos = OC::QualityOfService::HighQos;
 
@@ -140,11 +144,6 @@ int main(int argc, char* argv[])
             ipv6 = atoi(argv[opt + 1]);
             std::cout << "ipv6 passed = " << ipv6 << std::endl;
         }
-        else if (!strcmp(argv[opt], "-secure") || !strcmp(argv[opt], "--secure") )
-        {
-            secure = atoi(argv[opt + 1]);
-            std::cout << "secure passed = " << secure << std::endl;
-        }
         else if (!strcmp(argv[opt], "-highqos") || !strcmp(argv[opt], "--highqos") )
         {
             int q = atoi(argv[opt + 1]);
@@ -157,7 +156,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    std::cout <<  "Start Aircond server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " secure = " << secure << " qos = "  << q << std::endl;
+    std::cout <<  "Start Aircond server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " qos = "  << q << std::endl;
 
     if (!file_exist(JSON_PATH.c_str()))
     {
