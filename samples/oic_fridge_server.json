@@ -1,59 +1,170 @@
 {
-    "acl": [
-        {
-            "sub": "Kg==",
-            "rsrc": [
-                "/oic/res",
-                "/oic/d",
-                "/oic/p",
-                "/oic/res/types/d",
-                "/oic/ad",
-                "/oic/sec/acl",
-                "/oic/sec/svc",
-                "/oic/sec/amacl"
-            ],
-            "perms": 2,
-            "ownrs" : ["T0lDX0ZSR19TRVJWRVJfMQ=="]
+    "acl": {
+        "aclist": {
+            "aces": [
+                {
+                    "subjectuuid": "*",
+                    "resources": [
+                        {
+                            "href": "/oic/res",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },{
+                            "href": "/oic/d",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },{
+                            "href": "/oic/p",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },
+                        {
+                            "href": "/oic/res/d",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },
+                        {
+                            "href": "/oic/res/types/d",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },
+                        {
+                            "href": "/oic/presence",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        }
+                    ],
+                    "permission": 2
+                },
+                {
+                    "subjectuuid": "*",
+                    "resources": [
+                        {
+                            "href": "/oic/sec/doxm",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },
+                        {
+                            "href": "/oic/sec/pstat",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },
+                        {
+                            "href": "/oic/sec/acl",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },
+                        {
+                            "href": "/oic/sec/cred",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        }
+                    ],
+                    "permission": 6
+                },
+                {
+                    "subjectuuid": "*",
+                    "resources": [
+                        {
+                            "href": "/oic/sec/pconf",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        },
+                        {
+                            "href": "/oic/sec/dpairing",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        }
+                    ],
+                    "permission": 6
+                },
+                {
+                    "subjectuuid": "*",
+                    "resources": [
+                        {
+                            "href": "/oic/sec/ver",
+                            "rel": "",
+                            "rt": "",
+                            "if": ""
+                        }
+                    ],
+                    "permission": 2
+                },
+                {
+                    "subjectuuid": "*",
+                    "resources": [
+                        {
+                            "href": "/sec/fridge/power",
+                            "rel": "",
+                            "rt": "oic.r.switch.binary",
+                            "if": "oic.if.a"
+                        },
+                        {
+                            "href": "/sec/fridge/icemaker",
+                            "rel": "",
+                            "rt": "oic.r.icemaker",
+                            "if": "oic.if.a"
+                        },
+                        {
+                            "href": "/sec/fridge/refrigeration",
+                            "rel": "",
+                            "rt": "oic.r.refrigeration",
+                            "if": "oic.if.a"
+                        },
+                        {
+                            "href": "/sec/fridge/cooler/temp",
+                            "rel": "",
+                            "rt": "oic.r.temperature",
+                            "if": "oic.if.a"
+                        },                                             
+                        {
+                            "href": "/sec/fridge/cooler/freezer",
+                            "rel": "",
+                            "rt": "oic.r.temperature",
+                            "if": "oic.if.a"
+                        },                                             
+                        {
+                            "href": "/stb/nightmode",
+                            "rel": "",
+                            "rt": "oic.r.nightmode",
+                            "if": "oic.if.a"
+                        }
+                    ],
+                    "permission": 2
+                }                
+            ]
         },
-        {
-            "sub": "Kg==",
-            "rsrc": [
-                "/oic/sec/doxm",
-                "/oic/sec/pstat",
-                "/oic/sec/cred"
-             ],
-             "perms": 6,
-             "ownrs" : ["T0lDX0ZSR19TRVJWRVJfMQ=="]
-        },
-        {
-            "sub": "Kg==",
-            "rsrc": [
-                "/sec/fridge/icemaker",
-                "/sec/fridge/refrigeration",
-                "/sec/fridge/cooler/temp",
-                "/sec/fridge/freezer/temp",
-                "/sec/fridge/cooler/door",
-                "/sec/fridge/freezer/door",
-                "/sec/fridge/cvroom/door"
-             ],
-             "perms": 22,
-             "ownrs" : ["T0lDX0ZSR19TRVJWRVJfMQ=="]
-        }
-    ],
+        "rowneruuid" : "F8ID6E01-776F-726B-4465-765575696430"
+    },
     "pstat": {
         "isop": false,
-        "deviceid": "T0lDX0ZSR19TRVJWRVJfMQ==",
-        "ch": 0,
-        "cm": 0,
+        "deviceuuid": "F8ID6E01-776F-726B-4465-765575696430",
+        "rowneruuid": "F8ID6E01-776F-726B-4465-765575696430",
+        "cm": 2,
         "tm": 0,
         "om": 3,
-        "sm": [3]
-    },
+        "sm": 3
+        },
     "doxm": {
-        "oxm":  [0],
+        "oxms": [0],
         "oxmsel": 0,
         "sct": 1,
         "owned": false,
-        "deviceid": "T0lDX0ZSR19TRVJWRVJfMQ=="
+        "deviceuuid": "F8ID6E01-776F-726B-4465-765575696430",
+        "devowneruuid": "",
+        "rowneruuid": "F8ID6E01-776F-726B-4465-765575696430",
+        "dpc": true
     }
 }

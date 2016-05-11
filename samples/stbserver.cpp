@@ -60,10 +60,10 @@ const std::string VERSION = "1.0.1";
 /* DEVICE types */
 const std::string OC_WK_D = "oic.wk.d";
 const std::string OC_D_TV = "oic.d.tv";
-//oic_svr_db_server.json
-//oic_svr_db.json
-const std::string JSON_FILE = "oic_stb_server.json";
-const std::string JSON_PATH  = getUserHome() + "/" + JSON_FILE;
+//oic_svr_db_server.dat
+//oic_svr_db.dat
+const std::string DAT_FILE = "oic_stb_server.dat";
+const std::string DAT_PATH  = getUserHome() + "/" + DAT_FILE;
 
 #define TAG  "STB-SERVER"
 #define NIGHTMODE  0
@@ -102,7 +102,7 @@ private:
 FILE* server_fopen(const char *path, const char *mode)
 {
     (void)path;
-    const char* credFile = JSON_PATH.c_str();
+    const char* credFile = DAT_PATH.c_str();
     OIC_LOG_V(DEBUG, TAG, " ####################OPEN JSON DB %s", credFile);
 
     FILE* file = fopen(credFile, mode);
@@ -160,9 +160,9 @@ int main(int argc, char* argv[])
 
     std::cout <<  "Start STB server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " qos = "  << q << std::endl;
 
-    if (!file_exist(JSON_PATH.c_str()))
+    if (!file_exist(DAT_PATH.c_str()))
     {
-        std::cerr << "ERROR:: Missing JSON:" << JSON_PATH << std::endl;
+        std::cerr << "ERROR:: Missing JSON:" << DAT_PATH << std::endl;
         //exit(-1);
     }
 

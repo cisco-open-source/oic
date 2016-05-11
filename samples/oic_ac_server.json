@@ -1,41 +1,80 @@
 {
-    "acl": [
+    "aces": [
         {
-            "sub": "Kg==",
-            "rsrc": [
-                "/oic/res",
-                "/oic/d",
-                "/oic/p",
-                "/oic/res/types/d",
-                "/oic/ad",
-                "/oic/sec/acl",
-                "/oic/sec/svc",
-                "/oic/sec/amacl"
+            "subjectuuid": "*",
+            "resources": [
+                {
+                    "href": "/oic/res",
+                    "rel": "",
+                    "rt": "",
+                    "if": ""
+                },
+                {
+                    "href": "/oic/d",
+                    "rel": "",
+                    "rt": "",
+                    "if": ""
+                },
+                {
+                    "href": "/oic/p",
+                    "rel": "",
+                    "rt": "",
+                    "if": ""
+                },
+                {
+                    "href": "/oic/res/types/d",
+                    "rel": "",
+                    "rt": "",
+                    "if": ""
+                },
+                {
+                    "href": "/oic/ad",
+                    "rel": "",
+                    "rt": "",
+                    "if": ""
+                },
+                {
+                    "href": "/oic/sec/amacl",
+                    "rel": "",
+                    "rt": "",
+                    "if": ""
+                },
+                {
+                    "href": "/oic/sec/acl",
+                    "rel": "",
+                    "rt": "",
+                    "if": ""
+                },
+                {
+                    "href": "/oic/sec/svc",
+                    "rel": "",
+                    "rt": "",
+                    "if": ""
+                }
             ],
-            "perms": 2,
-            "ownrs" : ["T0lDX0FJUl9TRVJWRVJfMQ=="]
+            "permission": 2
         },
         {
-            "sub": "Kg==",
-            "rsrc": [
+            "subjectuuid": "*",
+            "resources": [
                 "/oic/sec/doxm",
                 "/oic/sec/pstat",
                 "/oic/sec/cred"
              ],
-             "perms": 6,
+             "permission": 6,
              "ownrs" : ["T0lDX0FJUl9TRVJWRVJfMQ=="]
         },
         {
-            "sub": "Kg==",
-            "rsrc": [
+            "subjectuuid": "*",
+            "resources": [
                 "/sec/aircon/power",
                 "/sec/aircon/temperature",
                 "/sec/aircon/airFlow",
                 "/sec/aircon/mode"
              ],
-             "perms": 22,
-             "ownrs" : ["T0lDX0FJUl9TRVJWRVJfMQ=="]
-        }
+             "permission": 22
+        },
+        "rowneruuid":["T0lDX0FJUl9TRVJWRVJfMQ=="]
     ],
     "pstat": {
         "isop": false,

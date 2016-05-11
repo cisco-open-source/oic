@@ -59,10 +59,10 @@ const std::string VERSION = "1.0.0";
 /* DEVICE types */
 const std::string OC_WK_D = "oic.wk.d";
 const std::string OC_D_TV = "oic.d.tv";
-//oic_svr_db_server.json
-//oic_svr_db.json
-const std::string JSON_FILE = "oic_ac_server.json";
-const std::string JSON_PATH  = getUserHome() + "/" + JSON_FILE;
+//oic_svr_db_server.dat
+//oic_svr_db.dat
+const std::string DAT_FILE = "oic_ac_server.dat";
+const std::string DAT_PATH  = getUserHome() + "/" + DAT_FILE;
 
 #define TAG  "Aircond-SERVER"
 
@@ -89,7 +89,7 @@ private:
 FILE* server_fopen(const char *path, const char *mode)
 {
     (void)path;
-    const char* credFile = JSON_PATH.c_str();
+    const char* credFile = DAT_PATH.c_str();
     OIC_LOG_V(DEBUG, TAG, "############FOPEN ############### path %s mode %s EXISTS %d", credFile, mode, file_exist(credFile));
 
     assert(file_exist(credFile));
@@ -109,7 +109,7 @@ FILE* server_fopen(const char *path, const char *mode)
 
 void PrintUsage()
 {
-    std::cout << "Usage : oicfridgeserver -ipv4 <0|1> -ipv6 <0|1> -secure <0|1> --highqos <0|1>" << std::endl;
+    std::cout << "Usage : oicfridgeserver -ipv4 <0|1> -ipv6 <0|1> --highqos <0|1>" << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -158,9 +158,9 @@ int main(int argc, char* argv[])
 
     std::cout <<  "Start Aircond server ipv4 =  " << ipv4 << " ipv6 = " << ipv6 << " qos = "  << q << std::endl;
 
-    if (!file_exist(JSON_PATH.c_str()))
+    if (!file_exist(DAT_PATH.c_str()))
     {
-        std::cerr << "ERROR:: Missing JSON:" << JSON_PATH << std::endl;
+        std::cerr << "ERROR:: Missing JSON:" << DAT_PATH << std::endl;
         //exit(-1);
     }
 

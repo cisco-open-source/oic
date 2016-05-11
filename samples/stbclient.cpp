@@ -78,7 +78,7 @@ void foundResource(std::shared_ptr<OCResource> resource)
 
 static FILE* client_open(const char* /*path*/, const char *mode)
 {
-    return fopen("./oic_svr_db_client.json", mode);
+    return fopen("./oic_svr_db_client.dat", mode);
 }
 
 void PrintUsage()
