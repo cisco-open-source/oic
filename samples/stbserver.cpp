@@ -237,10 +237,13 @@ int main(int argc, char* argv[])
     }
 
     // 4-Set Device info
-    const OCDeviceInfo deviceInfo =
+    OCDeviceInfo deviceInfo =
     {
-        .deviceName = duplicateStr(DEVICE_NAME)
+        .deviceName = duplicateStr(DEVICE_NAME),
+        .types = NULL
     };
+    OCResourcePayloadAddStringLL(&deviceInfo.types, duplicateStr(OC_WK_D));
+    OCResourcePayloadAddStringLL(&deviceInfo.types, duplicateStr(OC_D_TV));
 
     result = OCPlatform::registerDeviceInfo(deviceInfo);
 
