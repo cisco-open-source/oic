@@ -193,7 +193,7 @@ protected:
                     pResponse->setResourceRepresentation(get(), "");
                     ehResult = send(pResponse, OC_EH_OK);
                 }
-                else 
+                else
                 {
                     if (!checkInterface(get(), reqInterface))
                     {
@@ -206,10 +206,10 @@ protected:
                         ehResult = send(pResponse, OC_EH_OK);
                     }
                 }
-        }
-        else if (rt == "POST")
+            }
+            else if (rt == "POST")
             {
-                std::cout << uri << "POST Request" << std::endl;
+                std::cout << uri << " POST Request" << std::endl;
                 int ret = put(request->getResourceRepresentation());
 
                 if (ret < 0)

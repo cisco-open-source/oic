@@ -36,6 +36,7 @@
 #include "BinarySwitch.h"
 #include "MediaSource.h"
 #include "NightMode.h"
+#include "Maintenance.h"
 
 
 using namespace OC;
@@ -67,6 +68,7 @@ const std::string DAT_PATH  = getUserHome() + "/" + DAT_FILE;
 
 #define TAG  "STB-SERVER"
 #define NIGHTMODE  0
+#define MAINT  1
 
 class SetTopBox
 {
@@ -77,7 +79,11 @@ public:
     SetTopBox(bool secure) : m_audio ("/stb/audio", secure),
         m_bswitch ("/stb/binaryswitch", secure),
         m_media ("/stb/media", getSources(), secure)
-#if  NIGHTMODE
+#if MAINT
+        ,
+        m_maint(secure)
+#endif
+#if NIGHTMODE
         ,
         m_nightmode("/stb/nightmode", secure)
 #endif
@@ -87,7 +93,10 @@ private:
     AudioControl m_audio;
     BinarySwitch m_bswitch;
     MediaSourceList m_media;
-#if  NIGHTMODE
+#if MAINT
+    Maintenance m_maint;
+#endif
+#if NIGHTMODE
     NightMode m_nightmode;
 #endif
     std::vector<MediaSource> getSources()

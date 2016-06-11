@@ -55,12 +55,12 @@ void printOCRep(const OCRepresentation &oCRepr)
 
     printf("\thost=%s\n", oCRepr.getHost().c_str());
 
-    printf("\ttypes=%s\n", uri.c_str());
+    printf("\ttypes\n");
     for (const auto& resourceTypes : oCRepr.getResourceTypes()) {
         printf("\t\t%s\n", resourceTypes.c_str());
     }
 
-    printf("\tinterfaces=%s\n", uri.c_str());
+    printf("\tinterfaces\n");
     for (const auto& resourceInterfaces : oCRepr.getResourceInterfaces()) {
         printf("\t\t%s\n", resourceInterfaces.c_str());
     }

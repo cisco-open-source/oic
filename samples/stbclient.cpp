@@ -30,10 +30,16 @@
 #include "BinarySwitch.h"
 #include "MediaSource.h"
 #include "NightMode.h"
+#include "Maintenance.h"
 
 using namespace OC;
 
 std::shared_ptr<OCResource> curResource;
+
+const std::string RSC_URI = "/oic/mnt";
+
+void onPut(const HeaderOptions& /*headerOptions*/, const OCRepresentation& rep, const int eCode)
+{}
 
 // Callback handler on GET request
 void onGet(const HeaderOptions&, const OCRepresentation& rep, const int eCode)
@@ -51,28 +57,38 @@ void onGetDevice(const OCRepresentation& rep)
 // Callback to found resources
 void foundResource(std::shared_ptr<OCResource> resource)
 {
+    std::cout << "DISCOVERED Resource:" << std::endl;
+    std::cout << "\tURI of the resource: " << resource->uri() << std::endl;
+    std::cout << "\tHost address of the resource: " << resource->host() << std::endl;
+    std::cout << "\tList of resource types: " << std::endl;
 
-    if (resource->uri() == "/oic/d" && !curResource)
+    for (auto &resourceTypes : resource->getResourceTypes())
     {
-        curResource = resource;
-        std::cout << "DISCOVERED Resource:" << std::endl;
-        std::cout << "\tURI of the resource: " << resource->uri() << std::endl;
-        std::cout << "\tHost address of the resource: " << resource->host() << std::endl;
-        std::cout << "\tList of resource types: " << std::endl;
+        std::cout << "\t\t" << resourceTypes << std::endl;
+    }
 
-        for (auto &resourceTypes : resource->getResourceTypes())
-        {
-            std::cout << "\t\t" << resourceTypes << std::endl;
-        }
+    std::cout << "\tList of resource interfaces: " << std::endl;
+    for (auto &resourceInterfaces : resource->getResourceInterfaces())
+    {
+        std::cout << "\t\t" << resourceInterfaces << std::endl;
+    }
 
-        std::cout << "\tList of resource interfaces: " << std::endl;
-        for (auto &resourceInterfaces : resource->getResourceInterfaces())
-        {
-            std::cout << "\t\t" << resourceInterfaces << std::endl;
-        }
+    QueryParamsMap test;
+    resource->get(test, &onGet);
 
-        QueryParamsMap test;
-        resource->get(test, &onGet);
+    if (resource->uri() == RSC_URI)
+    {
+        if (!curResource)
+            curResource = resource;
+
+        std::cout << "\t###########CHANGE RSC: " << std::endl;
+
+        OCRepresentation rep;
+
+        rep.setValue<bool>(RB, true);
+        rep.setValue<bool>(FR, false);
+        rep.setValue<bool>(STATS, false);
+        curResource->post(rep, QueryParamsMap(), &onPut);
     }
 }
 
@@ -87,31 +103,6 @@ void PrintUsage()
 }
 
 int main(int argc, char* argv[]) {
-    int dev = 0, res = 0;
-
-    std::cout << "main " << argc << std::endl;
-    for (int opt = 1; opt < argc; opt++ )
-    {
-        std::cout << "opt nb = " << opt << " key = " <<  argv[opt] << " val = " << argv[opt + 1] << std::endl;
-
-        if (!strcmp(argv[opt], "-dev") || !strcmp(argv[opt], "--dev"))
-        {
-            dev = 1;
-            std::cout << "dev passed = " << dev << std::endl;
-        }
-        else if (!strcmp(argv[opt], "-res") || !strcmp(argv[opt], "--res"))
-        {
-            res = 1;
-            std::cout << "res passed = " << res << std::endl;
-        }
-    }
-
-    if (dev == 0 && res == 0)
-    {
-        std::cout << "Print help" << std::endl;
-        PrintUsage(); return -1;
-    }
-
     std::ostringstream requestURI;
     OCPersistentStorage ps {client_open, fread, fwrite, fclose, unlink };
     PlatformConfig cfg {
@@ -127,11 +118,9 @@ int main(int argc, char* argv[]) {
     std::cout.setf(std::ios::boolalpha);
     std::string host = "";
 
-    if (dev)
-        OCPlatform::getDeviceInfo(host, OC_RSRVD_DEVICE_URI, CT_DEFAULT,
+    OCPlatform::getDeviceInfo(host, OC_RSRVD_DEVICE_URI, CT_DEFAULT,
                                   &onGetDevice);
-    if (res)
-        OCPlatform::findResource("", OC_RSRVD_WELL_KNOWN_URI,
+    OCPlatform::findResource("", OC_RSRVD_WELL_KNOWN_URI,
                                  CT_DEFAULT, &foundResource);
 
     std::mutex blocker;
