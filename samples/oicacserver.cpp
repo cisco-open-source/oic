@@ -26,11 +26,14 @@
 
 #include "oic_string.h"
 #include "logger.h"
+#ifdef SECURE
 #include "oxmjustworks.h"
 #include "oxmrandompin.h"
 #include "securevirtualresourcetypes.h"
 #include "srmutility.h"
 #include "pmtypes.h"
+#endif
+
 #include "OCPlatform.h"
 #include "Mode.h"
 #include "Temperature.h"
