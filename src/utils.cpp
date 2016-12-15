@@ -27,7 +27,7 @@ char* duplicateStr(const std::string sourceString)
     return strdup(sourceString.c_str());
 }
 
-void printOCResource(const OCResource& oCResource)
+void printOCResource(const OC::OCResource& oCResource)
 {
     printf( "PrintfOcResource\n");
     printf( "\tRes[sId] = %s\n", oCResource.sid().c_str());

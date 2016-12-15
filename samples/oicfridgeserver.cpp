@@ -26,6 +26,7 @@
 
 #include "oic_string.h"
 #include "logger.h"
+
 #ifdef SECURE
 #include "oxmjustworks.h"
 #include "oxmrandompin.h"
@@ -33,7 +34,9 @@
 #include "srmutility.h"
 #include "pmtypes.h"
 #endif
+
 #include "OCPlatform.h"
+#include "ocpayload.h"
 #include "Refrigeration.h"
 #include "Temperature.h"
 #include "BinarySwitch.h"
@@ -66,7 +69,7 @@ const std::string VERSION = "1.0.0";
 
 /* DEVICE types */
 const std::string OC_WK_D = "oic.wk.d";
-const std::string OC_D_TV = "oic.d.tv";
+const std::string OC_D_FRDG = "oic.d.refrigerator";
 //oic_svr_db_server.dat
 //oic_svr_db.dat
 const std::string DAT_FILE = "oic_fridge_server.dat";
@@ -259,10 +262,13 @@ int main(int argc, char* argv[])
     }
 
     // 4-Set Device info
-    const OCDeviceInfo deviceInfo =
+    OCDeviceInfo deviceInfo =
     {
-        .deviceName = duplicateStr(DEVICE_NAME)
+        .deviceName = duplicateStr(DEVICE_NAME),
+        .types = NULL
     };
+    OCResourcePayloadAddStringLL(&deviceInfo.types, duplicateStr(OC_WK_D));
+    OCResourcePayloadAddStringLL(&deviceInfo.types, duplicateStr(OC_D_FRDG));
 
     result = OCPlatform::registerDeviceInfo(deviceInfo);
 

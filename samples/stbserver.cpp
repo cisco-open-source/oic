@@ -26,6 +26,7 @@
 
 #include "oic_string.h"
 #include "logger.h"
+
 #ifdef SECURE
 #include "oxmjustworks.h"
 #include "oxmrandompin.h"
@@ -33,7 +34,9 @@
 #include "srmutility.h"
 #include "pmtypes.h"
 #endif
+
 #include "OCPlatform.h"
+#include "ocpayload.h"
 #include "AudioResource.h"
 #include "BinarySwitch.h"
 #include "MediaSource.h"
