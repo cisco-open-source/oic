@@ -177,7 +177,9 @@ int main(int argc, char* argv[])
     if (!file_exist(DAT_PATH.c_str()))
     {
         std::cerr << "ERROR:: Missing JSON:" << DAT_PATH << std::endl;
-        //exit(-1);
+#ifdef SECURE
+        exit(-1);
+#endif
     }
 
     OCPersistentStorage ps = { server_fopen, fread, fwrite, fclose, unlink };
